@@ -1,203 +1,252 @@
-import Head from 'next/head'
+import { Component } from "react";
+import Head from "next/head";
+import "rsuite/lib/styles/index.less";
+import "rsuite/lib/styles/themes/dark/index.less";
+import { Container, Header, Navbar, Content, List, FlexboxGrid, Footer } from "rsuite";
+import MapGL from "react-map-gl";
+import moment from 'moment';
 
-const Home = () => (
-  <div className="container">
-    <Head>
-      <title>Create Next App</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+import { APIRequest } from "../services/BaseAPI";
 
-    <main>
-      <h1 className="title">
-        Welcome to <a href="https://nextjs.org">Next.js!</a>
-      </h1>
+const MAPBOX_TOKEN =
+    "pk.eyJ1IjoiY29ucXVlcmE5OSIsImEiOiJjazd3a2Y2Z3AwMzNuM2x0ZHIxbWI2dTVwIn0.nECBBbH1Zz3biOTUM3TCww"; // Set your mapbox token here
 
-      <p className="description">
-        Get started by editing <code>pages/index.js</code>
-      </p>
+const navStyle = {
+    position: "fixed",
+    zIndex: 1,
+    width: "100%"
+};
 
-      <div className="grid">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+const styleCenter = {
+    display: "flex",
+    alignItems: "center",
+    height: "60px",
+    padding: "0 10px"
+};
 
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Learn &rarr;</h3>
-          <p>Learn about Next.js in an interactive course with quizzes!</p>
-        </a>
+const slimText = {
+    fontSize: "0.666em",
+    color: "#97969B",
+    fontWeight: "lighter",
+    paddingBottom: 5
+};
 
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
+const titleStyle = {
+    paddingBottom: 5,
+    whiteSpace: "nowrap",
+    fontWeight: 500
+};
 
-        <a
-          href="https://zeit.co/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          className="card"
-        >
-          <h3>Deploy &rarr;</h3>
-          <p>
-            Instantly deploy your Next.js site to a public URL with ZEIT Now.
-          </p>
-        </a>
-      </div>
-    </main>
+const dataStyle = {
+    fontSize: "1.2em",
+    fontWeight: 500
+};
 
-    <footer>
-      <a
-        href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
-      </a>
-    </footer>
+const countryStyle = {
+    position: "absolute",
+    width: "30%",
+    top: 56,
+    height: "calc(100vh - 56px)",
+    overflow: "auto"
+};
 
-    <style jsx>{`
-      .container {
-        min-height: 100vh;
-        padding: 0 0.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
+const footerStyle = {
+    position: "absolute",
+	width: "70%",
+	bottom: 0,
+	right: 0,
+	paddingTop: 10,
+	paddingBottom: 5,
+	backgroundColor: "#0f131a",
+    boxShadow: "0 -1px 0 #292d33, 0 1px 0 #292d33",
+};
 
-      main {
-        padding: 5rem 0;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
+class Home extends Component {
+    constructor(props) {
+        super(props);
 
-      footer {
-        width: 100%;
-        height: 100px;
-        border-top: 1px solid #eaeaea;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+        this.viewportChange = this.viewportChange.bind(this);
+        this.loadAllCountries = this.loadAllCountries.bind(this);
+        this.renderCountries = this.renderCountries.bind(this);
+        this.loadSummary = this.loadSummary.bind(this);
 
-      footer img {
-        margin-left: 0.5rem;
-      }
+        this.state = {
+            summary: {
+				cases: 0,
+				deaths: 0,
+				recovered: 0,
+				updated: 0,
+			},
+            countries: [],
+            viewport: {
+                latitude: 19.488205240905323,
+                longitude: 76.49824179077201,
+                zoom: 1.5,
+                bearing: 0,
+                pitch: 0
+            }
+        };
+    }
 
-      footer a {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+    componentDidMount() {
+        this.loadAllCountries();
+        this.loadSummary();
+    }
 
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
+    viewportChange(viewport) {
+        this.setState({ viewport });
+    }
 
-      .title a {
-        color: #0070f3;
-        text-decoration: none;
-      }
+    loadAllCountries() {
+        APIRequest("countries")
+            .then(response => {
+                this.setState({
+                    countries: response
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }
 
-      .title a:hover,
-      .title a:focus,
-      .title a:active {
-        text-decoration: underline;
-      }
+    loadSummary() {
+        APIRequest("all")
+            .then(response => {
+                this.setState({
+                    summary: response
+                });
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }
 
-      .title {
-        margin: 0;
-        line-height: 1.15;
-        font-size: 4rem;
-      }
+    renderCountries() {
+        const { countries } = this.state;
 
-      .title,
-      .description {
-        text-align: center;
-      }
+        return countries.map(item => {
+            return (
+                <List.Item key={item["country"]}>
+                    <FlexboxGrid>
+                        <FlexboxGrid.Item
+                            colspan={6}
+                            style={{
+                                ...styleCenter,
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                overflow: "hidden"
+                            }}
+                        >
+                            <div style={titleStyle}>{item["country"]}</div>
+                            <div style={slimText}>
+                                <div>Today Cases</div>
+                                <div>{item["todayCases"]}</div>
+                            </div>
+                        </FlexboxGrid.Item>
+                        <FlexboxGrid.Item colspan={6} style={styleCenter}>
+                            <div style={{ textAlign: "right" }}>
+                                <div style={slimText}>Total Cases</div>
+                                <div style={dataStyle}>{item["cases"].toLocaleString()}</div>
+                            </div>
+                        </FlexboxGrid.Item>
+                        <FlexboxGrid.Item colspan={6} style={styleCenter}>
+                            <div style={{ textAlign: "right" }}>
+                                <div style={slimText}>Total Deaths</div>
+                                <div style={dataStyle}>{item["deaths"].toLocaleString()}</div>
+                            </div>
+                        </FlexboxGrid.Item>
+                        <FlexboxGrid.Item colspan={6} style={styleCenter}>
+                            <div style={{ textAlign: "right" }}>
+                                <div style={slimText}>Recovered</div>
+                                <div style={dataStyle}>{item["recovered"].toLocaleString()}</div>
+                            </div>
+                        </FlexboxGrid.Item>
+                    </FlexboxGrid>
+                </List.Item>
+            );
+        });
+    }
 
-      .description {
-        line-height: 1.5;
-        font-size: 1.5rem;
-      }
+    render() {
+        const { viewport, summary } = this.state;
 
-      code {
-        background: #fafafa;
-        border-radius: 5px;
-        padding: 0.75rem;
-        font-size: 1.1rem;
-        font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-          DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-      }
+        return (
+            <Container>
+                <Head>
+                    <title>Covid-19</title>
+                    <link rel="icon" href="/favicon.ico" />
+                    <link
+                        rel="stylesheet"
+                        href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css"
+                    />
+                    <link rel="stylesheet" href="/style.css" />
+                </Head>
 
-      .grid {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
+                <Header>
+                    <Navbar appearance="inverse" style={navStyle}>
+                        <Navbar.Header>
+                            <a className="navbar-brand logo">Covid-19</a>
+                        </Navbar.Header>
+                    </Navbar>
+                </Header>
+                <Container>
+                    <Content>
+                        <MapGL
+                            {...viewport}
+                            width="100wh"
+                            height="100vh"
+                            mapStyle="mapbox://styles/mapbox/dark-v9"
+                            onViewportChange={this.viewportChange}
+                            mapboxApiAccessToken={MAPBOX_TOKEN}
+                        />
+                    </Content>
+                    <Footer style={footerStyle}>
+						<FlexboxGrid>
+							<FlexboxGrid.Item
+								colspan={6}
+								style={{
+									...styleCenter,
+									flexDirection: "column",
+									alignItems: "flex-start",
+									overflow: "hidden"
+								}}
+							>
+								<div style={titleStyle}>Summary</div>
+								<div style={slimText}>
+									<div>Updated At</div>
+									<div>{moment(summary["updated"]).format('DD MMM YYYY HH:mm:ss')}</div>
+								</div>
+							</FlexboxGrid.Item>
+							<FlexboxGrid.Item colspan={6} style={styleCenter}>
+								<div style={{ textAlign: "right" }}>
+									<div style={slimText}>Total Cases</div>
+									<div style={dataStyle}>{summary["cases"].toLocaleString()}</div>
+								</div>
+							</FlexboxGrid.Item>
+							<FlexboxGrid.Item colspan={6} style={styleCenter}>
+								<div style={{ textAlign: "right" }}>
+									<div style={slimText}>Total Deaths</div>
+									<div style={dataStyle}>{summary["deaths"].toLocaleString()}</div>
+								</div>
+							</FlexboxGrid.Item>
+							<FlexboxGrid.Item colspan={6} style={styleCenter}>
+								<div style={{ textAlign: "right" }}>
+									<div style={slimText}>Recovered</div>
+									<div style={dataStyle}>{summary["recovered"].toLocaleString()}</div>
+								</div>
+							</FlexboxGrid.Item>
+						</FlexboxGrid>
+					</Footer>
 
-        max-width: 800px;
-        margin-top: 3rem;
-      }
+                    <FlexboxGrid align="top" style={countryStyle}>
+                        <FlexboxGrid.Item colspan={24}>
+                            <List hover>{this.renderCountries()}</List>
+                        </FlexboxGrid.Item>
+                    </FlexboxGrid>
+                </Container>
+            </Container>
+        );
+    }
+}
 
-      .card {
-        margin: 1rem;
-        flex-basis: 45%;
-        padding: 1.5rem;
-        text-align: left;
-        color: inherit;
-        text-decoration: none;
-        border: 1px solid #eaeaea;
-        border-radius: 10px;
-        transition: color 0.15s ease, border-color 0.15s ease;
-      }
-
-      .card:hover,
-      .card:focus,
-      .card:active {
-        color: #0070f3;
-        border-color: #0070f3;
-      }
-
-      .card h3 {
-        margin: 0 0 1rem 0;
-        font-size: 1.5rem;
-      }
-
-      .card p {
-        margin: 0;
-        font-size: 1.25rem;
-        line-height: 1.5;
-      }
-
-      @media (max-width: 600px) {
-        .grid {
-          width: 100%;
-          flex-direction: column;
-        }
-      }
-    `}</style>
-
-    <style jsx global>{`
-      html,
-      body {
-        padding: 0;
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-          Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-    `}</style>
-  </div>
-)
-
-export default Home
+export default Home;

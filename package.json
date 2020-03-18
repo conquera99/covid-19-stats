@@ -8,8 +8,15 @@
     "start": "next start"
   },
   "dependencies": {
+    "@zeit/next-less": "^1.0.1",
+    "moment": "^2.24.0",
     "next": "9.3.1",
     "react": "16.13.0",
-    "react-dom": "16.13.0"
+    "react-dom": "16.13.0",
+    "react-map-gl": "^5.2.3",
+    "rsuite": "^4.3.1"
+  },
+  "devDependencies": {
+    "less": "^3.11.1"
   }
 }
