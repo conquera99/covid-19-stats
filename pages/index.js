@@ -2,7 +2,7 @@ import { Component } from "react";
 import Head from "next/head";
 import "rsuite/lib/styles/index.less";
 import "rsuite/lib/styles/themes/dark/index.less";
-import { Container, Header, Navbar, Content, List, FlexboxGrid, Footer } from "rsuite";
+import { Container, Header, Navbar, Content, List, FlexboxGrid, Footer, Nav, Icon } from "rsuite";
 import MapGL from "react-map-gl";
 import moment from 'moment';
 
@@ -205,6 +205,12 @@ class Home extends Component {
                         <Navbar.Header>
                             <a className="navbar-brand logo">Covid-19</a>
                         </Navbar.Header>
+                        <Navbar.Body>
+                            <Nav pullRight>
+                                <Nav.Item target="_blank" href="https://github.com/conquera99" icon={<Icon icon="github" />}></Nav.Item>
+                                <Nav.Item target="_blank" href="https://instagram.com/conquera99" icon={<Icon icon="instagram" />}></Nav.Item>
+                            </Nav>
+                        </Navbar.Body>
                     </Navbar>
                 </Header>
                 <Container>

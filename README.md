@@ -2,6 +2,10 @@
 
 This is dashboard for monitoring Coronavirus-19 from all around the wolrd. this project still in development.
 
+### Next Steps
+1. Add Existing Cases
+2. Add map indicator
+
 #### Built With
 1. [Next.js](https://github.com/zeit/next.js)
 2. [Rsuite.js](https://github.com/rsuite/rsuite)
