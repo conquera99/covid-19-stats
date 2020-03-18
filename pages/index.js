@@ -25,7 +25,7 @@ const styleCenter = {
 };
 
 const slimText = {
-    fontSize: "0.666em",
+    fontSize: "0.8em",
     color: "#97969B",
     fontWeight: "lighter",
     paddingBottom: 5
@@ -39,7 +39,19 @@ const titleStyle = {
 
 const dataStyle = {
     fontSize: "1.2em",
-    fontWeight: 500
+	fontWeight: 500,
+};
+
+const dataStyleRed = {
+    fontSize: "1.2em",
+	fontWeight: 500,
+	color: '#ff3b3b',
+};
+
+const dataStyleGreen = {
+    fontSize: "1.2em",
+	fontWeight: 500,
+	color: '#9eea00',
 };
 
 const countryStyle = {
@@ -122,9 +134,15 @@ class Home extends Component {
     }
 
     renderCountries() {
-        const { countries } = this.state;
+		const { countries } = this.state;
 
         return countries.map(item => {
+			let newCases = <div>{item["todayCases"].toLocaleString()}</div>;
+	
+			if(item["todayCases"] > 0) {
+				newCases = <div style={{color: '#ffb162'}}>+{item["todayCases"].toLocaleString()}</div>;
+			}
+
             return (
                 <List.Item key={item["country"]}>
                     <FlexboxGrid>
@@ -140,7 +158,7 @@ class Home extends Component {
                             <div style={titleStyle}>{item["country"]}</div>
                             <div style={slimText}>
                                 <div>Today Cases</div>
-                                <div>{item["todayCases"]}</div>
+                                {newCases}
                             </div>
                         </FlexboxGrid.Item>
                         <FlexboxGrid.Item colspan={6} style={styleCenter}>
@@ -152,13 +170,13 @@ class Home extends Component {
                         <FlexboxGrid.Item colspan={6} style={styleCenter}>
                             <div style={{ textAlign: "right" }}>
                                 <div style={slimText}>Total Deaths</div>
-                                <div style={dataStyle}>{item["deaths"].toLocaleString()}</div>
+                                <div style={dataStyleRed}>{item["deaths"].toLocaleString()}</div>
                             </div>
                         </FlexboxGrid.Item>
                         <FlexboxGrid.Item colspan={6} style={styleCenter}>
                             <div style={{ textAlign: "right" }}>
                                 <div style={slimText}>Recovered</div>
-                                <div style={dataStyle}>{item["recovered"].toLocaleString()}</div>
+                                <div style={dataStyleGreen}>{item["recovered"].toLocaleString()}</div>
                             </div>
                         </FlexboxGrid.Item>
                     </FlexboxGrid>
@@ -226,13 +244,13 @@ class Home extends Component {
 							<FlexboxGrid.Item colspan={6} style={styleCenter}>
 								<div style={{ textAlign: "right" }}>
 									<div style={slimText}>Total Deaths</div>
-									<div style={dataStyle}>{summary["deaths"].toLocaleString()}</div>
+									<div style={dataStyleRed}>{summary["deaths"].toLocaleString()}</div>
 								</div>
 							</FlexboxGrid.Item>
 							<FlexboxGrid.Item colspan={6} style={styleCenter}>
 								<div style={{ textAlign: "right" }}>
 									<div style={slimText}>Recovered</div>
-									<div style={dataStyle}>{summary["recovered"].toLocaleString()}</div>
+									<div style={dataStyleGreen}>{summary["recovered"].toLocaleString()}</div>
 								</div>
 							</FlexboxGrid.Item>
 						</FlexboxGrid>
