@@ -1,4 +1,4 @@
-const API_URL = "https://corona.lmao.ninja";
+const API_URL = "https://covid19.nunukan.net";
 
 export function APIRequest(URL, mode = 'GET') {
     return new Promise((resolve, reject) => {
