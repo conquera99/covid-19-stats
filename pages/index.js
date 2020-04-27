@@ -1,6 +1,5 @@
 import { Component } from "react";
 import Head from "next/head";
-import { render } from "react-dom";
 import "rsuite/lib/styles/index.less";
 import "rsuite/lib/styles/themes/dark/index.less";
 import { Container, Header, Navbar, Content, List, FlexboxGrid, Footer, Nav, Icon } from "rsuite";
@@ -22,7 +21,7 @@ const geolocateStyle = {
 const clusterLayer = {
     id: "clusters",
     type: "circle",
-    source: "cases",
+    source: "covid19-cases",
     filter: ["has", "point_count"],
     paint: {
         "circle-color": ["step", ["get", "point_count"], "#51bbd6", 100, "#f1f075", 750, "#f28cb1"],
@@ -32,7 +31,7 @@ const clusterLayer = {
 const clusterCountLayer = {
     id: "cluster-count",
     type: "symbol",
-    source: "cases",
+    source: "covid19-cases",
     filter: ["has", "point_count"],
     layout: {
         "text-field": "{point_count_abbreviated}",
@@ -44,7 +43,7 @@ const clusterCountLayer = {
 const unclusteredPointLayer = {
     id: "unclustered-point",
     type: "circle",
-    source: "cases",
+    source: "covid19-cases",
     filter: ["!", ["has", "point_count"]],
     paint: {
         "circle-color": "#11b4da",
